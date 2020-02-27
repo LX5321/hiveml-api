@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+const colors = require('colors');
 var mysql = require('mysql');
 
 var dbConn = mysql.createConnection({
@@ -27,7 +28,7 @@ app.get('/', function (req, res) {
 app.get('/users', function (req, res) {
     dbConn.query('SELECT * FROM users', function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'List of users in DB.' });
+        return res.send({ error: false, data: results, message: 'List of users in database.' });
     });
 });
  
@@ -45,38 +46,21 @@ app.get('/user/:id', function (req, res) {
     });
   
 });
- 
- 
-//  Update user with id
-app.put('/user', function (req, res) {
   
-    let user_id = req.body.user_id;
-    let user = req.body.user;
-  
-    if (!user_id || !user) {
-        return res.status(400).send({ error: user, message: 'Please provide user and user_id' });
-    }
-  
-    dbConn.query("UPDATE users SET user = ? WHERE id = ?", [user, user_id], function (error, results, fields) {
-        if (error) throw error;
-        return res.send({ error: false, data: results, message: 'user has been updated successfully.' });
-    });
+// insert new observation
+app.post('/insert/:user_id/:doctor_id', function (req, res){
+    let user_id = req.params.user_id;
+    let doctor_id = req.params.doctor_id;
+    var data = {
+        "data": {
+            "user": user_id,
+            "doctor": doctor_id
+        }
+    }; 
+
+    send.json(data);
 });
- 
- 
-//  Delete user
-app.delete('/user', function (req, res) {
-  
-    let user_id = req.body.user_id;
-  
-    if (!user_id) {
-        return res.status(400).send({ error: true, message: 'Please provide user_id' });
-    }
-    dbConn.query('DELETE FROM users WHERE id = ?', [user_id], function (error, results, fields) {
-        if (error) throw error;
-        return res.send({ error: false, data: results, message: 'User has been updated successfully.' });
-    });
-}); 
+
  
 // set port
 app.listen(3000, function () {
